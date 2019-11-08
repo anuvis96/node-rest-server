@@ -1,58 +1,34 @@
-require('./config/config');
-const express = require('express');
+require("./config/config");
+// Using Node.js `require()`
+const mongoose = require("mongoose");
+
+const express = require("express");
 const app = express();
-const bodyParser = require('body-parser');
+const bodyParser = require("body-parser");
 
-// parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }))
- 
-// parse application/json
-app.use(bodyParser.json())
+// Parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }));
 
- 
-app.get('/usuario', function (req, res) {
-  res.json({
+// Parse application/json
+app.use(bodyParser.json());
 
-    "Nombre":"Daniel",
-    "Edad": "Masculino"
+app.use(require("./routes/usuario"));
 
-  })
-})
+// Mongoose Connections
+mongoose.connect(
+  process.env.URLDB,
+  {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useUnifiedTopology: true
+  },
+  (err, res) => {
+    if (err) throw err;
 
-app.post('/usuario', function (req, res) {
-
-  let body = req.body;
-  if (body.nombre === undefined) {
-
-      res.status(400).json({
-        ok: false,
-        mensaje: 'El nombre es necesario'
-
-      });
+    console.log("Base de datos online");
   }
-  else { 
-    res.json({
+);
 
-    persona: body
-
-  });
-}
-})
-
-app.put('/usuario/:id', function (req, res) {
-  let id = req.params.id;
-  res.json({
-    id
-
-  });
-})
-
-app.delete('/usuario/:id', function (req, res) {
-  res.json('Hello World')
+app.listen(process.env.PORT, () => {
+  console.log("Escuchando en puerto", 3000);
 });
- 
-app.listen(process.env.PORT, () =>{
-
-    console.log('Escuchando en puerto', 3000);
-
-})
